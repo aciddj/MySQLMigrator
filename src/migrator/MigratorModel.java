@@ -2,6 +2,8 @@ package migrator;
 
 import migrator.helpers.Subversion;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 /**
@@ -110,5 +112,22 @@ public class MigratorModel {
         Preferences prefs = Config.getInstance().getPreferences();
         prefs.setFirstLaunch(false);
         Config.getInstance().savePreferences(prefs);
+    }
+
+    public void checkPreferences() throws Exception {
+        checkSVN();
+        checkMySQLDump();
+    }
+
+    public void checkSVN() throws Exception {
+        Path svnPath = Paths.get(Config.getInstance().getPreferences().getSvnExecutablePath());
+        if (svnPath.toFile() == null || (!svnPath.toFile().exists()))
+            throw new Exception("Path to SVN executable is not set or does not exist");
+    }
+
+    public void checkMySQLDump() throws Exception {
+        Path svnPath = Paths.get(Config.getInstance().getPreferences().getMySQLDumpPath());
+        if (svnPath.toFile() == null || (!svnPath.toFile().exists()))
+            throw new Exception("Path to MySQLDump executable is not set or does not exist");
     }
 }

@@ -115,6 +115,16 @@ public class MigratorController implements IWindow, Initializable {
 
     @FXML
     private void addDatabaseClick() {
+        try {
+            model.checkSVN();
+        } catch (Exception e) {
+            Dialogs.ErrorMessage("Error checking SVN", e.getMessage());
+            try {
+                Window.ShowFXMLWindow(getClass().getResource("./views/preferences/preferences.fxml"), stage, true, null);
+            } catch (IOException ioe) {}
+            return;
+        }
+
         boolean result = false;
         try {
             result = Window.ShowFXMLWindow(getClass().getResource("./views/database_properties/database_properties.fxml"), stage, true, null);
@@ -365,6 +375,16 @@ public class MigratorController implements IWindow, Initializable {
             boolean firstConnectMade = false;
             if (!isConnected) {
                 if(!db.isInitialized()) {
+                    try {
+                        model.checkMySQLDump();
+                    } catch (Exception e) {
+                        Dialogs.ErrorMessage("Error checking MySQLDump", e.getMessage());
+                        try {
+                            Window.ShowFXMLWindow(getClass().getResource("./views/preferences/preferences.fxml"), stage, true, null);
+                        } catch (IOException ioe) {}
+                        return;
+                    }
+
                     Dialogs.InformationMessage("Database folder initialization",
                             "Database does not have revisions. Preparing folders may take some time.");
                     firstConnectMade = true;
