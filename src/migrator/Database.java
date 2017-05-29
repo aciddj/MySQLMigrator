@@ -140,12 +140,7 @@ public class Database {
 
     public void connect(boolean createInitialRevisionIfNeed) throws Exception {
         connection.connect();
-
-        if (!DatabaseFolder.isInitialized(this)) {
-            DatabaseFolder.initFolder(this);
-        } else {
-            DatabaseFolder.updateFolder(this);
-        }
+        initFolder(false);
 
         if (traceChanges)
             enableTracing();
@@ -156,6 +151,15 @@ public class Database {
             createInitialRevision = createInitialRevisionIfNeed;
 
         fillRevisions(createInitialRevision, false);
+    }
+
+    public void initFolder(boolean update) throws Exception {
+        if (!DatabaseFolder.isInitialized(this)) {
+            DatabaseFolder.initFolder(this);
+        } else {
+            if (update)
+                DatabaseFolder.updateFolder(this);
+        }
     }
 
     private void fillRevisions(boolean createInitialRevision, boolean withUpdate) throws Exception {

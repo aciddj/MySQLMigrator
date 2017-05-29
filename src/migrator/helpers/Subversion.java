@@ -41,20 +41,17 @@ public class Subversion {
 
     private void execCommand(String command) throws Exception {
         Process process = Runtime.getRuntime().exec(command);
-        if (process.waitFor() != 0){ // svn command failed
 
-            // getting error from stderr
-            StringBuilder textBuilder = new StringBuilder();
-            try (Reader reader = new BufferedReader(new InputStreamReader
-                    (process.getErrorStream(), Charset.forName(StandardCharsets.UTF_8.name())))) {
-                int c = 0;
-                while ((c = reader.read()) != -1) {
-                    textBuilder.append((char) c);
-                }
-            }
+        // getting output from stderr
+        StringBuilder textBuilder = new StringBuilder();
+        String line;
+        BufferedReader reader =
+                new BufferedReader(new InputStreamReader(process.getInputStream(), Charset.forName(StandardCharsets.UTF_8.name())));
+        while ((line = reader.readLine()) != null)
+            textBuilder.append(line);
 
+        if (process.waitFor() != 0) // svn command failed
             throw new Exception(textBuilder.toString());
-        }
     }
 
     public void setSvnPath (String svnPath) throws Exception {

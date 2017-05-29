@@ -387,8 +387,18 @@ public class MigratorController implements IWindow, Initializable {
 
                     Dialogs.InformationMessage("Database folder initialization",
                             "Database does not have revisions. Preparing folders may take some time.");
+
+                    try {
+                        db.initFolder(true);
+                    } catch (Exception e){
+                        item.setExpanded(false);
+                        Dialogs.ErrorMessage("Error preparing database folder", e.getMessage());
+                        return;
+                    }
+
                     firstConnectMade = true;
                 }
+
                 if ((!db.hasRevisions()) && (!db.isTraced()))
                     createInitialRevision = Dialogs.YesNoQuestion("Question", "There are no database revisions found",
                             "There are no database revisions, and you have not enabled tracing for your database changes. Would you like to make your current database dump as initial revision?");
@@ -400,7 +410,7 @@ public class MigratorController implements IWindow, Initializable {
                     return;
                 }
 
-                if (firstConnectMade) {
+                if (firstConnectMade && db.isTraced()) {
                     Dialogs.Warning("Tracing was enabled", "Please reconnect all your MySQL clients to make their changes visible for the program.");
                 }
 
